@@ -23,10 +23,10 @@ if __name__ == '__main__':
     # Split into train and test
     X = df['text'].values
     X = X.astype(str)
-    y = df.iloc[:, 9:].values # 28 emotions
+    y = df.iloc[:, 9:].values # 27 emotions + neutral
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
     maxlen = max([len(x) for x in X_train])
-    print('Size: {}(train), {}(test)'.format(len(X_train), len(X_test)))
+    print('Dataset: {}(train), {}(test)'.format(len(X_train), len(X_test)))
 
     # Tokenize / Create word dictionary / Getting ad list of word index
     tokenizer = Tokenizer(num_words=10000, oov_token='unk')
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     X_test = tokenizer.texts_to_sequences(X_test)
 
     vocab_size = len(tokenizer.word_index) + 1
-    print('vocabulary size: {}'.format(vocab_size))
+    print('Vocabulary size: {}'.format(vocab_size))
 
     # Padding
     X_train = pad_sequences(X_train, padding='post', maxlen=maxlen)
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     # Do training
     history = model.fit(X_train, y_train, epochs=10, verbose=True, callbacks=callbacks, validation_data=(X_test, y_test), batch_size=100)
 
-    # Evaluate
+    # Evaluation
     y_pred = model.predict(X_test)
     thresholds = np.arange(0.1, 1.0, 0.1)
     for th in thresholds:
